@@ -34,6 +34,18 @@ public class Lua : ModuleRules
         bEnableUndefinedIdentifierWarnings = false;
         ShadowVariableWarningLevel = WarningLevel.Off;
 
+        if (Target.Platform != UnrealTargetPlatform.Win64)
+            throw new BuildException("Experimental LuaJIT benchmark adapter is Win64-only.");
+        PublicDefinitions.Add("UNLUA_USE_LUAJIT=1");
+        PublicDefinitions.Add("LUAJIT_ENABLE_LUA52COMPAT=1");
+        PublicDefinitions.Add("LUA_BUILD_AS_DLL");
+        PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "LuaJitCompat"));
+        PublicIncludePaths.Add("G:/GitHub/LuaJIT/src");
+        PublicAdditionalLibraries.Add("G:/GitHub/LuaJIT/src/lua51.lib");
+        PublicDelayLoadDLLs.Add("lua51.dll");
+        RuntimeDependencies.Add("$(ProjectDir)/Binaries/Win64/lua51.dll", "G:/GitHub/LuaJIT/src/lua51.dll");
+        return;
+
         m_LuaVersion = GetLuaVersion();
         m_Config = GetConfigName();
         m_LibName = GetLibraryName();

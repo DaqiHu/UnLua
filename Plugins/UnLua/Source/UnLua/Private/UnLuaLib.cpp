@@ -222,7 +222,11 @@ namespace UnLua
             lua_getglobal(L, LUA_GNAME);
             lua_setfield(L, -2, LUA_GNAME);
             luaL_setfuncs(L, UnLua_LegacyFunctions, 0);
+#if defined(UNLUA_USE_LUAJIT) && UNLUA_USE_LUAJIT
+            lua_setfenv(L, -2);
+#else
             lua_setupvalue(L, -2, 1);
+#endif
             lua_pcall(L, 0, LUA_MULTRET, 0);
             lua_getglobal(L, "Class");
             lua_setfield(L, -2, "Class");

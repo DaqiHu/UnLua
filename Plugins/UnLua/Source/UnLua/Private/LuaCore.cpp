@@ -29,11 +29,18 @@ extern "C" {
 #endif
 #endif
 
+#if UNLUA_USE_LUAJIT
+THIRD_PARTY_INCLUDES_START
+#include "lj_obj.h"
+THIRD_PARTY_INCLUDES_END
+using Udata = GCudata;
+#else
 #define TString LuaInternalString
 #include "lfunc.h"
 #include "lstate.h"
 #include "lobject.h"
 #undef TString
+#endif
 
 #ifdef __cplusplus
 #if !LUA_COMPILE_AS_CPP
@@ -104,6 +111,7 @@ struct FUserdataDesc
 /**
  * Get 'TValue' from Lua stack
  */
+#if !UNLUA_USE_LUAJIT
 static TValue* GetTValue(lua_State* L, int32 Index)
 {
 #if 504 == LUA_VERSION_NUM
@@ -193,9 +201,15 @@ static Udata* GetUdata(TValue* Value)
     return uvalue(Value);
 }
 
+#endif
+
 static void* GetUdataMem(Udata* U)
 {
+#if UNLUA_USE_LUAJIT
+    return uddata(U);
+#else
     return getudatamem(U);
+#endif
 }
 
 static int32 GetUdataMemSize(Udata* U)
@@ -205,6 +219,10 @@ static int32 GetUdataMemSize(Udata* U)
 
 static uint8 GetUdataHeaderSize()
 {
+#if UNLUA_USE_LUAJIT
+    static_assert(sizeof(GCudata) < 256, "Userdata descriptor header size contract");
+    return sizeof(GCudata);
+#else
     static uint8 HeaderSize = 0;
     if (0 == HeaderSize)
     {
@@ -221,6 +239,7 @@ static uint8 GetUdataHeaderSize()
     }
 
     return HeaderSize;
+#endif
 }
 
 /**
@@ -324,6 +343,22 @@ void* GetUserdataFast(lua_State *L, int32 Index, bool *OutTwoLvlPtr)
     bool bTwoLvlPtr = false;
     void* Userdata = nullptr;
 
+#if UNLUA_USE_LUAJIT
+    const int32 Type = lua_type(L, Index);
+    if (Type == LUA_TUSERDATA)
+    {
+        uint8* Buffer = static_cast<uint8*>(lua_touserdata(L, Index));
+        Udata* U = reinterpret_cast<Udata*>(Buffer - GetUdataHeaderSize());
+        FUserdataDesc* Desc = GetUserdataDesc(U);
+        if (Desc && (Desc->tag & BIT_VARIANT_TAG))
+        {
+            bTwoLvlPtr = (Desc->tag & BIT_TWOLEVEL_PTR) != 0;
+            Userdata = (Desc->tag & BIT_RELEASED_TAG) ? nullptr : bTwoLvlPtr ? Buffer : Buffer + Desc->padding;
+        }
+        else { Userdata = Buffer; }
+    }
+    else if (Type == LUA_TLIGHTUSERDATA) { Userdata = lua_touserdata(L, Index); }
+#else
     TValue* Value = GetTValue(L, Index);
     int32 Type = GetTValueType(Value);
     if (Type == LUA_TUSERDATA)
@@ -349,6 +384,8 @@ void* GetUserdataFast(lua_State *L, int32 Index, bool *OutTwoLvlPtr)
     {
         Userdata = pvalue(Value);                                 // get the light userdata
     }
+
+#endif
 
     if (OutTwoLvlPtr)
     {
@@ -514,12 +551,20 @@ void* CacheScriptContainer(lua_State *L, void *Key, const FScriptContainerDesc &
  */
 void* GetScriptContainer(lua_State *L, int32 Index)
 {
+#if UNLUA_USE_LUAJIT
+    if (lua_type(L, Index) == LUA_TUSERDATA)
+#else
     TValue* Value = GetTValue(L, Index);
     if ((Value->tt_ & 0x0F) == LUA_TUSERDATA)
+#endif
     {
         uint8 Flag = (BIT_VARIANT_TAG | BIT_SCRIPT_CONTAINER);              // variant tags
 
+#if UNLUA_USE_LUAJIT
+        Udata* U = reinterpret_cast<Udata*>(static_cast<uint8*>(lua_touserdata(L, Index)) - GetUdataHeaderSize());
+#else
         Udata* U = GetUdata(Value);
+#endif
         FUserdataDesc* UserdataDesc = GetUserdataDesc(U);
         if (UserdataDesc)
         {

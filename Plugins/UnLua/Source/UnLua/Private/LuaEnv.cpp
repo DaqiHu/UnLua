@@ -1,4 +1,4 @@
-﻿// Tencent is pleased to support the open source community by making UnLua available.
+// Tencent is pleased to support the open source community by making UnLua available.
 // 
 // Copyright (C) 2019 Tencent. All rights reserved.
 //
@@ -29,9 +29,15 @@
 #include "UnLuaLegacy.h"
 #include "UnLuaLib.h"
 #include "UnLuaSettings.h"
+#if UNLUA_USE_LUAJIT
+THIRD_PARTY_INCLUDES_START
+#include "lj_obj.h"
+THIRD_PARTY_INCLUDES_END
+#else
 #define TString LuaInternalString
 #include "lstate.h"
 #undef TString
+#endif
 
 namespace UnLua
 {
@@ -214,13 +220,21 @@ namespace UnLua
         if (!L)
             return nullptr;
 
+        #if UNLUA_USE_LUAJIT
+        const auto MainThread = mainthread(G(L));
+#else
         const auto MainThread = G(L)->mainthread;
+#endif
         return AllEnvs.FindRef(MainThread);
     }
 
     FLuaEnv& FLuaEnv::FindEnvChecked(const lua_State* L)
     {
+        #if UNLUA_USE_LUAJIT
+        return *AllEnvs.FindChecked(mainthread(G(L)));
+#else
         return *AllEnvs.FindChecked(G(L)->mainthread);
+#endif
     }
 
     void FLuaEnv::Start(const TMap<FString, UObject*>& Args)
@@ -646,7 +660,11 @@ namespace UnLua
     void FLuaEnv::AddSearcher(lua_CFunction Searcher, int Index) const
     {
         lua_getglobal(L, "package");
+#if UNLUA_USE_LUAJIT
+        lua_getfield(L, -1, "loaders");
+#else
         lua_getfield(L, -1, "searchers");
+#endif
         lua_remove(L, -2);
         if (!lua_istable(L, -1))
         {

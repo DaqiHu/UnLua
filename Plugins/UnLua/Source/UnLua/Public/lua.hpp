@@ -14,6 +14,10 @@
 
 #pragma once
 
+#if defined(UNLUA_USE_LUAJIT) && UNLUA_USE_LUAJIT
+#include "../../ThirdParty/Lua/LuaJitCompat/lua.hpp"
+#else
+
 #ifdef __cplusplus
 #if !LUA_COMPILE_AS_CPP
 extern "C" {
@@ -29,3 +33,5 @@ extern "C" {
 }
 #endif
 #endif
+
+#endif // UNLUA_USE_LUAJIT
