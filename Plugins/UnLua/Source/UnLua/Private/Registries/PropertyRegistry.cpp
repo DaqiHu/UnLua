@@ -98,31 +98,9 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FBoolProperty(PropertyCollector, NAME_None, RF_Transient, 0, (EPropertyFlags)0, 0xFF, 1, true);
 #else
-            constexpr auto Params = UECodeGen_Private::FBoolPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_None,
-                UECodeGen_Private::EPropertyGenFlags::Bool | UECodeGen_Private::EPropertyGenFlags::NativeBool,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                sizeof(bool),
-                sizeof(FPropertyCollector),
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto Property = new FBoolProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto Property = new FBoolProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->SetBoolSize(sizeof(bool), true);
 #endif
             BoolProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
         }
@@ -136,29 +114,10 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FIntProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash);
 #else
-            constexpr auto Params = UECodeGen_Private::FIntPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Int,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto Property = new FIntProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto Property = new FIntProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->ElementSize = sizeof(int32);
+            Property->PropertyFlags |= CPF_HasGetValueTypeHash;
 #endif
             IntProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
         }
@@ -172,29 +131,10 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FFloatProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash);
 #else
-            constexpr auto Params = UECodeGen_Private::FFloatPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Float,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto Property = new FFloatProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto Property = new FFloatProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->ElementSize = sizeof(float);
+            Property->PropertyFlags |= CPF_HasGetValueTypeHash;
 #endif
             FloatProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
         }
@@ -208,29 +148,10 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FStrProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash);
 #else
-            constexpr auto Params = UECodeGen_Private::FStrPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Str,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto Property = new FStrProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto Property = new FStrProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->ElementSize = sizeof(FString);
+            Property->PropertyFlags |= CPF_HasGetValueTypeHash;
 #endif
             StringProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
         }
@@ -244,29 +165,10 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FNameProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash);
 #else
-            constexpr auto Params = UECodeGen_Private::FNamePropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Name,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto Property = new FNameProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto Property = new FNameProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->ElementSize = sizeof(FName);
+            Property->PropertyFlags |= CPF_HasGetValueTypeHash;
 #endif
             NameProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
         }
@@ -280,32 +182,13 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             const auto Property = new FTextProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash);
 #else
-            constexpr auto Params = UECodeGen_Private::FTextPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Text,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
+            // UE 5.8: construct transient descriptors through the public FField API.
 #if UE_VERSION_NEWER_THAN(5, 2, 1)
             const auto Property = new FTextProperty(PropertyCollector, "", RF_Transient);
 #else
-            const auto Property = new FTextProperty(PropertyCollector, Params);
+            const auto Property = new FTextProperty(PropertyCollector, NAME_None, RF_Transient);
+            Property->ElementSize = sizeof(FText);
+            Property->PropertyFlags |= CPF_HasGetValueTypeHash;
 #endif
 #endif
             TextProperty = TSharedPtr<ITypeInterface>(FPropertyDesc::Create(Property));
@@ -324,31 +207,11 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             Property = new FObjectProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash, Class);
 #else
-            constexpr auto Params = UECodeGen_Private::FObjectPropertyParams
-            {
-                nullptr,
-                nullptr,
-                CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Object,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto ObjectProperty = new FObjectProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto ObjectProperty = new FObjectProperty(PropertyCollector, NAME_None, RF_Transient);
             ObjectProperty->PropertyClass = Class;
+            ObjectProperty->ElementSize = sizeof(UObject*);
+            ObjectProperty->PropertyFlags |= CPF_HasGetValueTypeHash;
             Property = ObjectProperty;
 #endif
         }
@@ -357,40 +220,19 @@ namespace UnLua
 #if UE_VERSION_OLDER_THAN(5, 1, 0)
             Property = new FStructProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash, ScriptStruct);
 #else
-            const auto Params = UECodeGen_Private::FStructPropertyParams
-            {
-                nullptr,
-                nullptr,
-                ScriptStruct->GetCppStructOps()
-                    ? ScriptStruct->GetCppStructOps()->GetComputedPropertyFlags() | CPF_HasGetValueTypeHash
-                    : CPF_HasGetValueTypeHash,
-                UECodeGen_Private::EPropertyGenFlags::Struct,
-                RF_Transient,
-#if UE_VERSION_OLDER_THAN(5, 3, 0)
-                1,
-#endif
-                nullptr,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                1,
-#endif
-                0,
-                nullptr,
-#if UE_VERSION_NEWER_THAN(5, 2, 1)
-                METADATA_PARAMS(0, nullptr)
-#else
-                METADATA_PARAMS(nullptr, 0)
-#endif
-            };
-            const auto StructProperty = new FStructProperty(PropertyCollector, Params);
+            // UE 5.8: construct transient descriptors through the public FField API.
+            const auto StructProperty = new FStructProperty(PropertyCollector, NAME_None, RF_Transient);
             StructProperty->Struct = ScriptStruct;
             StructProperty->ElementSize = ScriptStruct->PropertiesSize;
+            StructProperty->PropertyFlags |= CPF_HasGetValueTypeHash;
             Property = StructProperty;
 #endif
         }
         else if (const auto Enum = Cast<UEnum>(Field))
         {
-            const auto EnumProperty = new FEnumProperty(PropertyCollector, NAME_None, RF_Transient, 0, CPF_HasGetValueTypeHash, Enum);
+            const auto EnumProperty = new FEnumProperty(PropertyCollector, NAME_None, RF_Transient);
+            EnumProperty->SetEnum(Enum);
+            EnumProperty->PropertyFlags |= CPF_HasGetValueTypeHash;
             const auto UnderlyingProperty = new FByteProperty(EnumProperty, TEXT("UnderlyingType"), RF_Transient);
             Property = EnumProperty;
             Property->AddCppProperty(UnderlyingProperty);

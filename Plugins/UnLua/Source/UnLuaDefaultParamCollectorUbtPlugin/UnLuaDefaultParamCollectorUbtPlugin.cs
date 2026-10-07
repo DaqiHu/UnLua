@@ -57,10 +57,10 @@ namespace UnLuaDefaultParamCollectorUbtPlugin
 
         private void Generate()
         {
-            foreach (UhtPackage package in Session.Packages)
+            foreach (UhtPackage package in Session.Modules.SelectMany(module => module.Packages))
             {
-                var moduleType = package.Module.ModuleType;
-                ParseModule(package.Module.Name, moduleType, package.Module.OutputDirectory);
+                var moduleType = package.Module.Module.ModuleType;
+                ParseModule(package.Module.Module.Name, moduleType, package.Module.Module.OutputDirectory);
                 if (moduleType != UHTModuleType.EngineRuntime && moduleType != UHTModuleType.GameRuntime)
                 {
                     continue;

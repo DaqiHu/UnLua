@@ -29,9 +29,11 @@ extern "C" {
 #endif
 #endif
 
+#define TString LuaInternalString
 #include "lfunc.h"
 #include "lstate.h"
 #include "lobject.h"
+#undef TString
 
 #ifdef __cplusplus
 #if !LUA_COMPILE_AS_CPP

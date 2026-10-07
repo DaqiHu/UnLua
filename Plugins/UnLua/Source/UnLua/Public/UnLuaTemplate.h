@@ -20,6 +20,11 @@
 
 namespace UnLua
 {
+#if UE_VERSION_NEWER_THAN(5, 7, 0)
+    template <bool Condition, typename A, typename B> struct TChooseClass { using Result = std::conditional_t<Condition, A, B>; };
+    template <typename T> struct TIsTriviallyDestructible { enum { Value = std::is_trivially_destructible_v<T> }; };
+    template <typename T> struct TIsTriviallyCopyConstructible { enum { Value = std::is_trivially_copy_constructible_v<T> }; };
+#endif
 
     /**
      * Traits class which tests if a type is constructible
